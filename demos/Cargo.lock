@@ -210,6 +210,7 @@ dependencies = [
  "dhat",
  "rand",
  "rayon",
+ "smallvec",
 ]
 
 [[package]]
