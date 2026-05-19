@@ -9,6 +9,7 @@ criterion = {version = "0.5", features = ["html_reports"]}
 [dependencies]
 rayon = "1.10"
 dhat = { version = "0.3", optional = true }
+rand = "0.9"
 
 [features]
 dhat-heap = ["dep:dhat"]
