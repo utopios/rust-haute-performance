@@ -24,3 +24,7 @@ harness= false
 [[bench]]
 name="bench_exo01"
 harness= false
+
+[[bench]]
+name="bench_exo02"
+harness= false
