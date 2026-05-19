@@ -1,0 +1,110 @@
+# ===== Rust / Cargo =====
+# Artefacts de compilation
+/target/
+**/target/
+
+# Fichiers de lock pour les bibliothèques (à garder pour les binaires)
+# Décommente la ligne suivante si ce projet est une bibliothèque publiée :
+# Cargo.lock
+
+# Fichiers de sauvegarde générés par rustfmt
+**/*.rs.bk
+
+# Fichiers de débogage MSVC
+*.pdb
+
+# ===== Criterion (benchmarks) =====
+# Rapports HTML et données brutes générés par cargo bench
+/criterion/
+**/criterion/
+
+# ===== Profiling =====
+# samply / perf / flamegraph
+*.perf
+perf.data
+perf.data.old
+flamegraph.svg
+profile.json
+*.folded
+
+# dhat (heap profiler)
+dhat-heap.json
+dhat-*.json
+
+# Massif / Valgrind
+massif.out.*
+callgrind.out.*
+cachegrind.out.*
+
+# ===== IDE / Éditeurs =====
+# VS Code (garde les configs partagées via .vscode/settings.json.example si besoin)
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains (CLion, RustRover, IntelliJ)
+.idea/
+*.iml
+
+# Vim / Neovim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+\#*\#
+.\#*
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# ===== Système =====
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ===== Logs et fichiers temporaires =====
+*.log
+*.tmp
+*.bak
+*.swp
+.cache/
+
+# ===== Variables d'environnement / secrets =====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# ===== Coverage =====
+*.profraw
+*.profdata
+/coverage/
+tarpaulin-report.html
+cobertura.xml
+lcov.info
+
+# ===== Documentation générée =====
+/doc/
+/target/doc/
