@@ -208,6 +208,7 @@ version = "0.1.0"
 dependencies = [
  "criterion",
  "dhat",
+ "parking_lot",
  "rand",
  "rayon",
  "smallvec",

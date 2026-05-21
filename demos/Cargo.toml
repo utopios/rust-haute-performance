@@ -11,6 +11,7 @@ rayon = "1.10"
 dhat = { version = "0.3", optional = true }
 rand = "0.9"
 smallvec = "1.13"
+parking_lot = "0.12"
 
 [features]
 dhat-heap = ["dep:dhat"]
