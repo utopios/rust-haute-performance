@@ -12,6 +12,8 @@ dhat = { version = "0.3", optional = true }
 rand = "0.9"
 smallvec = "1.13"
 parking_lot = "0.12"
+crossbeam = "0.8"
+dashmap   = "5"
 
 [features]
 dhat-heap = ["dep:dhat"]
