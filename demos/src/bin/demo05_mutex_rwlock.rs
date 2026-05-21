@@ -12,14 +12,14 @@ use parking_lot::RwLock as PlRwLock;
 /// pour mesurer l'overhead du Mutex de la bibliothèque standard
 /// par rapport à parking_lot.
 fn bench_std_mutex(iterations: u64, threads: usize) -> Duration {
-    let counter = Arc::new(Mutex::new(0u64));
+    let counter: Arc<Mutex<u64>> = Arc::new(Mutex::new(0u64));
     let start = Instant::now();
 
     let handles: Vec<_> = (0..threads)
         .map(|_| {
             let counter = Arc::clone(&counter);
             thread::spawn(move || {
-                for _ in 0..iterations {
+                for i in 0..iterations {
                     let mut guard = counter.lock().unwrap();
                     *guard += 1;
                 }
@@ -46,7 +46,7 @@ fn bench_parking_lot_mutex(iterations: u64, threads: usize) -> Duration {
             let counter = Arc::clone(&counter);
             thread::spawn(move || {
                 for _ in 0..iterations {
-                    // parking_lot::Mutex : pas de Result, pas de poison
+                    // parking_lot::Mutex : pas de Result, pas de poison             
                     let mut guard = counter.lock();
                     *guard += 1;
                 }
@@ -55,7 +55,11 @@ fn bench_parking_lot_mutex(iterations: u64, threads: usize) -> Duration {
         .collect();
 
     for h in handles {
-        h.join().unwrap();
+        // h.join().unwrap();
+        match h.join() {
+            Ok(()) => print!("Thread terminé avec succès :"),
+            Err(e) => eprintln!("Thread panicked : {:?}", e), 
+        }
     }
 
     let elapsed = start.elapsed();
