@@ -1,0 +1,50 @@
+// =============================================================================
+// Définition du service gRPC — la "source unique de vérité".
+// tonic-build (dans build.rs) génère le code Rust client ET serveur à partir
+// de ce fichier, au moment du `cargo build`.
+// =============================================================================
+syntax = "proto3";
+package kvstore;
+
+// Le service : 4 méthodes RPC.
+service KvStore {
+  // --- RPC "unary" (1 requête → 1 réponse), le mode classique ---
+  rpc Put    (PutRequest)    returns (PutResponse);
+  rpc Get    (GetRequest)    returns (GetResponse);
+  rpc Delete (DeleteRequest) returns (DeleteResponse);
+
+  // --- RPC "server streaming" (1 requête → N réponses en flux) ---
+  // Le client s'abonne et reçoit en temps réel chaque modification du store.
+  // C'est ici que Tokio (channels + tasks) et Tonic (stream) brillent.
+  rpc Watch  (WatchRequest)  returns (stream WatchEvent);
+}
+
+message PutRequest {
+  string key   = 1;
+  string value = 2;
+}
+message PutResponse {
+  bool created = 1; // true = nouvelle clé, false = mise à jour d'une clé existante
+}
+
+message GetRequest { string key = 1; }
+message GetResponse {
+  bool   found = 1;
+  string value = 2;
+}
+
+message DeleteRequest { string key = 1; }
+message DeleteResponse { bool deleted = 1; }
+
+message WatchRequest {} // s'abonner à tout (pas de filtre, pour rester simple)
+
+// Un événement poussé au client abonné à chaque écriture/suppression.
+message WatchEvent {
+  enum Kind {
+    PUT    = 0;
+    DELETE = 1;
+  }
+  Kind   kind  = 1;
+  string key   = 2;
+  string value = 3; // vide pour un DELETE
+}

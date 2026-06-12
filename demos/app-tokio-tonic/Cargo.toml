@@ -1,0 +1,35 @@
+[package]
+name = "app-tokio-tonic"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# =============================================================================
+# Application de démonstration TOKIO + TONIC
+#
+# Un KV-store (clé→valeur) accessible en gRPC. Deux binaires :
+#   - le serveur : cargo run --bin server
+#   - le client  : cargo run --bin client
+#
+# Démontre :
+#   - TOKIO  : le runtime async (#[tokio::main], tasks, channels, sleep)
+#   - TONIC  : gRPC en Rust (service défini en .proto, code généré, streaming)
+# =============================================================================
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tonic = "0.12"
+prost = "0.13"                 # encodage Protocol Buffers
+tokio-stream = "0.1"          # adapter un channel en stream gRPC
+
+[build-dependencies]
+tonic-build = "0.12"          # génère le code Rust depuis le .proto au build
+
+# Deux binaires distincts : le serveur et le client.
+[[bin]]
+name = "server"
+path = "src/bin/server.rs"
+
+[[bin]]
+name = "client"
+path = "src/bin/client.rs"
