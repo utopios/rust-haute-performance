@@ -1,0 +1,107 @@
+// =============================================================================
+// kvstore.proto – Variante gRPC documentaire (non utilisée par le binaire)
+//
+// L'implémentation Rust utilise un protocole binaire custom basé sur
+// tokio_util::codec + bincode pour rester compilable sans build.rs.
+// Ce fichier .proto sert de référence pour quiconque voudrait porter le projet
+// sur tonic + prost.
+// =============================================================================
+
+syntax = "proto3";
+
+package kvstore;
+
+// -----------------------------------------------------------------------------
+// Service public exposé aux clients
+// -----------------------------------------------------------------------------
+service KvStore {
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc Put(PutRequest) returns (PutResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc Scan(ScanRequest) returns (stream KeyValue);
+}
+
+// -----------------------------------------------------------------------------
+// Service interne (inter-noeuds, non exposé aux clients)
+// -----------------------------------------------------------------------------
+service Internal {
+  rpc Replicate(ReplicateRequest) returns (ReplicateResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc TransferShard(TransferRequest) returns (stream KeyValue);
+}
+
+// -----------------------------------------------------------------------------
+// Messages
+// -----------------------------------------------------------------------------
+
+message GetRequest {
+  string key = 1;
+}
+
+message GetResponse {
+  bool found = 1;
+  bytes value = 2;
+  uint64 version = 3;
+}
+
+message PutRequest {
+  string key = 1;
+  bytes value = 2;
+  // TTL en millisecondes, 0 = pas de TTL
+  uint64 ttl_ms = 3;
+}
+
+message PutResponse {
+  bool ok = 1;
+  uint64 version = 2;
+  // Noeuds ayant accusé réception
+  repeated string acks = 3;
+}
+
+message DeleteRequest {
+  string key = 1;
+}
+
+message DeleteResponse {
+  bool existed = 1;
+}
+
+message ScanRequest {
+  string prefix = 1;
+  uint32 limit = 2;
+}
+
+message KeyValue {
+  string key = 1;
+  bytes value = 2;
+  uint64 version = 3;
+}
+
+message ReplicateRequest {
+  string key = 1;
+  bytes value = 2;
+  uint64 version = 3;
+  uint64 ttl_ms = 4;
+  uint32 source_node_id = 5;
+}
+
+message ReplicateResponse {
+  bool ok = 1;
+  string error = 2;
+}
+
+message HeartbeatRequest {
+  uint32 node_id = 1;
+  uint64 timestamp_unix_ms = 2;
+}
+
+message HeartbeatResponse {
+  uint32 node_id = 1;
+  uint64 keys_count = 2;
+  uint64 uptime_s = 3;
+}
+
+message TransferRequest {
+  string from_node = 1;
+  string to_node = 2;
+}

@@ -1,0 +1,73 @@
+# =============================================================================
+# docker-compose.yml – Cluster KV 3 noeuds (Sprint 5)
+# =============================================================================
+# Démarrage :
+#   docker compose up --build
+#
+# Test depuis l'hôte :
+#   docker compose exec node1 /app/kvc --addr 127.0.0.1:50051 put hello world
+#   curl http://localhost:9091/metrics
+#   curl http://localhost:9091/health
+# =============================================================================
+
+services:
+  node1:
+    build: .
+    image: kv-distributed:latest
+    container_name: kv-node1
+    command:
+      - --node-id=1
+      - --listen=0.0.0.0:50051
+      - --metrics-addr=0.0.0.0:9090
+      - --peers=node2:50051,node3:50051
+      - --log-format=json
+    environment:
+      - RUST_LOG=info,kv_distributed=info
+    ports:
+      - "50051:50051"
+      - "9091:9090"
+    networks:
+      - kvnet
+    restart: unless-stopped
+
+  node2:
+    build: .
+    image: kv-distributed:latest
+    container_name: kv-node2
+    command:
+      - --node-id=2
+      - --listen=0.0.0.0:50051
+      - --metrics-addr=0.0.0.0:9090
+      - --peers=node1:50051,node3:50051
+      - --log-format=json
+    environment:
+      - RUST_LOG=info,kv_distributed=info
+    ports:
+      - "50052:50051"
+      - "9092:9090"
+    networks:
+      - kvnet
+    restart: unless-stopped
+
+  node3:
+    build: .
+    image: kv-distributed:latest
+    container_name: kv-node3
+    command:
+      - --node-id=3
+      - --listen=0.0.0.0:50051
+      - --metrics-addr=0.0.0.0:9090
+      - --peers=node1:50051,node2:50051
+      - --log-format=json
+    environment:
+      - RUST_LOG=info,kv_distributed=info
+    ports:
+      - "50053:50051"
+      - "9093:9090"
+    networks:
+      - kvnet
+    restart: unless-stopped
+
+networks:
+  kvnet:
+    driver: bridge
